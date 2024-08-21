@@ -26,6 +26,7 @@
 <body>
     <div class="container mt-5">
         <h1 class="mb-4">CPNS D-IV Teknik Informatika</h1>
+        <p id="lastUpdate">Last updated: Loading...</p>
         <div class="table-responsive">
             <table id="dataTable" class="table table-striped table-bordered">
                 <thead>
@@ -42,6 +43,23 @@
 
     <script>
         $(document).ready(function() {
+            $.get('last_modified.php', function(data) {
+                // Mengonversi waktu UTC ke waktu lokal UTC+7
+                const utcTimestamp = parseInt(data);
+                const date = new Date(utcTimestamp * 1000); // Konversi timestamp ke milidetik
+                const options = { 
+                    timeZone: 'Asia/Jakarta', 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit' 
+                };
+                const localDate = new Intl.DateTimeFormat('id-ID', options).format(date);
+                
+                $('#lastUpdate').text('Last updated: ' + localDate);
+            });
             // Mengambil data CSV dan menampilkan dalam tabel
             Papa.parse('semua_data_gabungan.csv', {
                 download: true,
