@@ -43,10 +43,10 @@
 
     <script>
         $(document).ready(function() {
-            $.get('last_modified.php', function(data) {
-                // Mengonversi waktu UTC ke waktu lokal UTC+7
-                const utcTimestamp = parseInt(data);
-                const date = new Date(utcTimestamp * 1000); // Konversi timestamp ke milidetik
+            // Mengambil data last modified dari API GitHub
+            $.get('https://api.github.com/repos/tohadibrex/formasi/commits', function(data) {
+                const commitDate = data[0].commit.committer.date;
+                const date = new Date(commitDate);
                 const options = { 
                     timeZone: 'Asia/Jakarta', 
                     year: 'numeric', 
@@ -60,6 +60,7 @@
                 
                 $('#lastUpdate').text('Last updated: ' + localDate);
             });
+
             // Mengambil data CSV dan menampilkan dalam tabel
             Papa.parse('semua_data_gabungan.csv', {
                 download: true,
