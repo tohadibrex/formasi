@@ -44,7 +44,7 @@
     <script>
         $(document).ready(function() {
             // Mengambil data last modified dari API GitHub
-            $.get('https://api.github.com/repos/tohadibrex/formasi/commits', function(data) {
+            $.get('https://api.github.com/repos/tohadibrex/formasi/commits?path=semua_data_gabungan.csv', function(data) {
                 const commitDate = data[0].commit.committer.date;
                 const date = new Date(commitDate);
                 const options = { 
