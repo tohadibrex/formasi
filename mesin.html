@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPNS D-IV Teknik Mesin</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <style>
+        .container {
+            max-width: 100%;
+        }
+        #dataTable {
+            width: 100% !important; /* Pastikan tabel menggunakan lebar penuh */
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">CPNS D-IV Teknik Mesin</h1>
+        <p id="lastUpdate">Last updated: Loading...</p>
+        <div class="table-responsive">
+            <table id="dataTable" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <!-- Header tabel akan diisi melalui JavaScript -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data tabel akan diisi melalui JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Mengambil data last modified dari API GitHub
+            $.get('https://api.github.com/repos/tohadibrex/formasi/commits', function(data) {
+                const commitDate = data[0].commit.committer.date;
+                const date = new Date(commitDate);
+                const options = { 
+                    timeZone: 'Asia/Jakarta', 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit' 
+                };
+                const localDate = new Intl.DateTimeFormat('id-ID', options).format(date);
+                
+                $('#lastUpdate').text('Last updated: ' + localDate);
+            });
+
+            // Mengambil data CSV dan menampilkan dalam tabel
+            Papa.parse('semua_data_mesin.csv', {
+                download: true,
+                header: true,
+                complete: function(results) {
+                    const data = results.data;
+                    const columns = Object.keys(data[0]);
+
+                    // Menampilkan header tabel
+                    const headerRow = $('#dataTable thead tr');
+                    columns.forEach(col => {
+                        headerRow.append(`<th>${col}</th>`);
+                    });
+
+                    // Menampilkan baris tabel
+                    const tbody = $('#dataTable tbody');
+                    data.forEach(row => {
+                        const tr = $('<tr></tr>');
+                        columns.forEach(col => {
+                            let cellData = row[col];
+                            // Konversi data numerik ke angka jika bisa
+                            if (!isNaN(cellData) && cellData.trim() !== "") {
+                                cellData = parseFloat(cellData);
+                            }
+                            tr.append(`<td>${cellData}</td>`);
+                        });
+                        tbody.append(tr);
+                    });
+
+                    // Inisialisasi DataTables
+                    $('#dataTable').DataTable({
+                        "paging": false,          // Nonaktifkan pagination
+                        "searching": true,       // Enable search functionality
+                        "ordering": true,        // Enable column ordering
+                        "scrollX": true,         // Enable horizontal scroll
+                        "info": true,           // Nonaktifkan informasi footer
+                        "lengthChange": false,   // Nonaktifkan opsi perubahan panjang tampilan
+                        "pageLength": -1,        // Tampilkan semua baris (nonaktifkan pagination)
+                        "processing": true,      // Tampilkan indikator pemrosesan
+                        "serverSide": false,     // Nonaktifkan server-side processing
+                        "order": [],             // Nonaktifkan urutan default
+                        "columnDefs": [
+                            { 
+                                "targets": [5, 7, 8], // Indeks kolom yang berisi data numerik
+                                "type": "num"         // Tentukan bahwa ini adalah tipe data numerik
+                            }
+                        ]
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
