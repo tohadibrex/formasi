@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CPNS D-IV Teknik Informatika</title>
+    <title>BUKAN SSSACN</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <!-- Select2 CSS for better dropdowns -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <style>
         .container {
             max-width: 100%;
@@ -18,15 +21,45 @@
         .table-responsive {
             overflow-x: auto;
         }
+        .filter-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .select2-container {
+            width: 100% !important;
+        }
+        .filter-label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .filter-dropdown {
+            width: 100%;
+        }
     </style>
+
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <body>
     <div class="container mt-5">
         <h1 class="mb-4">CPNS D-IV Teknik Informatika</h1>
         <p id="lastUpdate">Last updated: Loading...</p>
+
+        <!-- Filter Container -->
+        <div class="filter-container">
+            <div class="filter-item">
+                <span class="filter-label">Filter Instansi:</span>
+                <select id="filter-ins_nm" class="filter-dropdown" multiple="multiple"></select>
+            </div>
+            <div class="filter-item">
+                <span class="filter-label">Filter Jabatan:</span>
+                <select id="filter-jabatan_nm" class="filter-dropdown" multiple="multiple"></select>
+            </div>
+        </div>
+
         <div class="table-responsive">
             <table id="dataTable" class="table table-striped table-bordered">
                 <thead>
@@ -81,7 +114,6 @@
                         const tr = $('<tr></tr>');
                         columns.forEach(col => {
                             let cellData = row[col];
-                            // Konversi data numerik ke angka jika bisa
                             if (!isNaN(cellData) && cellData.trim() !== "") {
                                 cellData = parseFloat(cellData);
                             }
@@ -91,17 +123,17 @@
                     });
 
                     // Inisialisasi DataTables
-                    $('#dataTable').DataTable({
-                        "paging": false,          // Nonaktifkan pagination
-                        "searching": true,       // Enable search functionality
-                        "ordering": true,        // Enable column ordering
-                        "scrollX": true,         // Enable horizontal scroll
-                        "info": true,           // Nonaktifkan informasi footer
-                        "lengthChange": false,   // Nonaktifkan opsi perubahan panjang tampilan
-                        "pageLength": -1,        // Tampilkan semua baris (nonaktifkan pagination)
-                        "processing": true,      // Tampilkan indikator pemrosesan
-                        "serverSide": false,     // Nonaktifkan server-side processing
-                        "order": [],             // Nonaktifkan urutan default
+                    const table = $('#dataTable').DataTable({
+                        "paging": false,
+                        "searching": true,
+                        "ordering": true,
+                        "scrollX": true,
+                        "info": true,
+                        "lengthChange": false,
+                        "pageLength": -1,
+                        "processing": true,
+                        "serverSide": false,
+                        "order": [],
                         "columnDefs": [
                             { 
                                 "targets": [5, 6, 7], // Indeks kolom yang berisi data numerik
@@ -109,6 +141,39 @@
                             }
                         ]
                     });
+
+                    // Tambahkan dropdown select2 untuk nilai unik dalam kolom ins_nm dan jabatan_nm
+                    ['ins_nm', 'jabatan_nm'].forEach((col) => {
+                        const index = columns.indexOf(col);
+                        const uniqueValues = [...new Set(data.map(row => row[col]))].sort();
+                        const filterDropdown = $(`#filter-${col}`);
+
+                        uniqueValues.forEach(value => {
+                            filterDropdown.append(`<option value="${value}">${value}</option>`);
+                        });
+
+                        // Inisialisasi Select2
+                        filterDropdown.select2({
+                            placeholder: `Filter by ${col}`,
+                            allowClear: true,
+                        });
+
+                        // Event listener untuk filter dropdown
+                        filterDropdown.on('change', function() {
+                            filterColumn(index);
+                        });
+                    });
+
+                    // Fungsi untuk filter berdasarkan dropdown
+                    function filterColumn(columnIndex) {
+                        let filterValues = $(`#filter-${columns[columnIndex]}`).val();
+                        if (filterValues) {
+                            filterValues = filterValues.map(value => $.fn.dataTable.util.escapeRegex(value));
+                            table.column(columnIndex).search(filterValues.join('|'), true, false).draw();
+                        } else {
+                            table.column(columnIndex).search('').draw();
+                        }
+                    }
                 }
             });
         });
