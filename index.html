@@ -338,7 +338,7 @@
                         filterDropdown.on('change', function () {
                             const selectedValues = $(this).val() || [];
                             table.column(index)
-                                .search(selectedValues.join('|'), true, false)
+                                .search(selectedValues.join('|'), false, false)
                                 .draw();
                         });
                     });
