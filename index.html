@@ -273,6 +273,48 @@
         .content {
             display: none;
         }
+
+        /* Gaya untuk tombol navbar */
+        .navbar-toggler {
+            right: 1rem;
+            /* Adjust as needed */
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            border-radius: 0.375rem;
+            /* Rounded corners */
+            padding: 0.375rem 0.75rem;
+            /* Padding */
+            box-shadow: 0 0 0 2px #007bff;
+            /* Ring color for focus */
+        }
+
+        /* Gaya untuk garis pada tombol */
+        .navbar-toggler span {
+            display: block;
+            height: 0.125rem;
+            /* Ketebalan baris */
+            width: 1.875rem;
+            /* Lebar baris */
+            background-color: #000;
+            /* Warna baris */
+            margin: 0.25rem 0;
+            /* Jarak vertikal antara baris */
+            transition: background-color 0.3s ease;
+        }
+
+        /* Gaya untuk garis pada tema gelap */
+        .dark navbar-toggler span {
+            background-color: #fff;
+        }
+
+        /* Gaya saat tombol berada dalam fokus */
+        .navbar-toggler:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #007bff;
+            /* Adjust focus ring color */
+        }
     </style>
 </head>
 
@@ -289,6 +331,8 @@
                 <a class="navbar-brand" href="#"><span class="blue-text">BUKAN</span>SSACN</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                    <span class="navbar-toggler-icon"></span>
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
