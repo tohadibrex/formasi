@@ -427,7 +427,7 @@
             $('#loadingSpinner').show();
 
             // Mengambil data last modified dari API GitHub
-            $.get('https://api.github.com/repos/tohadibrex/formasi/commits?path=semua_data_gabungan.csv',
+            $.get('https://api.github.com/repos/tohadibrex/formasi/commits?path=data.csv',
                 function (data) {
                     const commitDate = data[0].commit.committer.date;
                     const date = new Date(commitDate);
