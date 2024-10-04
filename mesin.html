@@ -427,7 +427,7 @@
             $('#loadingSpinner').show();
 
             // Mengambil data last modified dari API GitHub
-            $.get('https://api.github.com/repos/tohadibrex/formasi/commits?path=semua_data_mesin.csv',
+            $.get('https://api.github.com/repos/tohadibrex/formasi/commits?path=semua_data_gabungan.csv',
                 function (data) {
                     const commitDate = data[0].commit.committer.date;
                     const date = new Date(commitDate);
@@ -448,7 +448,7 @@
             });
 
             // Mengambil data CSV dan menampilkan dalam tabel
-            Papa.parse('semua_data_mesin.csv', {
+            Papa.parse('semua_data_gabungan.csv', {
                 download: true,
                 header: true,
                 complete: function (results) {
